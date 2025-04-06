@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "the_lords_land",
+  "version": "${version}",
+  "name": "The Lords Lands",
+  "description": "A government mod with voting, land control, and econonmy control",
+  "authors": [
+    "samuelh2005"
+  ],
+  "contact": {
+    "homepage": "https://github.com/ajh123/TheLordsLands"
+  },
+  "license": "GPL-3.0",
+  "icon": "assets/the_lords_land/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.ajh123.the_lords_land.fabric.TheLordsLandsFabric"
+    ],
+    "client": [
+      "me.ajh123.the_lords_land.fabric.client.TheLordsLandsFabricClient"
+    ]
+  },
+  "mixins": [
+    "the_lords_land.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.12",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "architectury": ">=13.0.8",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
