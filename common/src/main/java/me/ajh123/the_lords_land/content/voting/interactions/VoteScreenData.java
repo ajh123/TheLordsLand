@@ -4,27 +4,15 @@ import me.ajh123.the_lords_land.content.network.ByteBufConvertable;
 import me.ajh123.the_lords_land.content.voting.system.Poll;
 import net.minecraft.network.FriendlyByteBuf;
 
-public class VoteScreenData implements ByteBufConvertable {
-    private Poll poll;
-
-    public VoteScreenData() {
-    }
-
-    public VoteScreenData(Poll poll) {
-        this.poll = poll;
-    }
+public record VoteScreenData(Poll poll) implements ByteBufConvertable {
 
     @Override
     public void decode(FriendlyByteBuf buf) {
-
+        poll.decode(buf);
     }
 
     @Override
     public void encode(FriendlyByteBuf buf) {
-
-    }
-
-    public Poll getPoll() {
-        return poll;
+        poll.encode(buf);
     }
 }

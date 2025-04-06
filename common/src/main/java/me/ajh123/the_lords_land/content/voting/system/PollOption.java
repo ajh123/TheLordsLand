@@ -13,11 +13,13 @@ import java.util.List;
  */
 public class PollOption implements ByteBufConvertable {
     private String description;
+    private String title;
     private final List<VoteResult> results;
     private int votes;
 
-    public PollOption(String description, List<VoteResult> results) {
+    public PollOption(String description, String title, List<VoteResult> results) {
         this.description = description;
+        this.title = title;
         // Create a defensive copy of the actions list.
         this.results = new ArrayList<>(results);
         this.votes = 0;
@@ -28,6 +30,13 @@ public class PollOption implements ByteBufConvertable {
      */
     public void addVote() {
         votes++;
+    }
+
+    /**
+     * Returns the title of this option.
+     */
+    public String getTitle() {
+        return title;
     }
 
     /**
@@ -55,6 +64,7 @@ public class PollOption implements ByteBufConvertable {
     public String toString() {
         return "PollOption{" +
                 "description='" + description + '\'' +
+                ", title='" + title + '\'' +
                 ", votes=" + votes +
                 '}';
     }
@@ -62,10 +72,12 @@ public class PollOption implements ByteBufConvertable {
     @Override
     public void decode(FriendlyByteBuf buf) {
         this.description = buf.readUtf();
+        this.title = buf.readUtf();
     }
 
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeUtf(this.description);
+        buf.writeUtf(this.title);
     }
 }

@@ -4,6 +4,7 @@ import dev.architectury.networking.NetworkManager;
 import me.ajh123.the_lords_land.TheLordsLands;
 import me.ajh123.the_lords_land.api.LordsLandPlayer;
 import me.ajh123.the_lords_land.content.voting.interactions.VoteScreenData;
+import me.ajh123.the_lords_land.content.voting.system.Poll;
 import net.fabricmc.api.EnvType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -21,7 +22,7 @@ public record OpenVoteS2CPayload(VoteScreenData data) implements CustomPacketPay
     }
 
     private OpenVoteS2CPayload(FriendlyByteBuf friendlyByteBuf) {
-        this(new VoteScreenData());
+        this(new VoteScreenData(new Poll(null, null)));
         this.data.decode(friendlyByteBuf);
     }
 

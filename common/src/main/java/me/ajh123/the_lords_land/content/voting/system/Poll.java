@@ -101,7 +101,7 @@ public class Poll implements ByteBufConvertable {
         this.question = buf.readUtf();
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
-            PollOption option = new PollOption("", new ArrayList<>());
+            PollOption option = new PollOption("", "", new ArrayList<>());
             option.decode(buf);
             options.add(option);
         }

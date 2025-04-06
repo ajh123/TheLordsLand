@@ -23,9 +23,9 @@ public final class TheLordsLands {
 
 
     public static Poll getTestPoll() {
-        Poll poll = new Poll("test", new MajorityCondition(2.0 / 3));
-        PollOption option1 = new PollOption("Option 1", new ArrayList<>());
-        PollOption option2 = new PollOption("Option 2", new ArrayList<>());
+        Poll poll = new Poll("test vote", new MajorityCondition(2.0 / 3));
+        PollOption option1 = new PollOption("This may do something!" ,"Option 1", new ArrayList<>());
+        PollOption option2 = new PollOption("Something else may happen from this.", "Option 2", new ArrayList<>());
 
         poll.addOption(option1);
         poll.addOption(option2);
