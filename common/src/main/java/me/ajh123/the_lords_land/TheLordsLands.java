@@ -11,6 +11,7 @@ public final class TheLordsLands {
     public static void init() {
         ModRegistries.init();
         if (loaderCreativeTabs != null) {
+            LoaderCreativeTabs.preInit();
             loaderCreativeTabs.init();
         }
     }

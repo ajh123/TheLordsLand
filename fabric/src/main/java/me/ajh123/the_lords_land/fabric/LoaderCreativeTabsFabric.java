@@ -1,7 +1,6 @@
 package me.ajh123.the_lords_land.fabric;
 
-import me.ajh123.the_lords_land.TheLordsLands;
-import me.ajh123.the_lords_land.foundation.ModItems;
+import me.ajh123.the_lords_land.compat.loader.CreativeTabMeta;
 import me.ajh123.the_lords_land.compat.loader.LoaderCreativeTabs;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -12,25 +11,31 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class LoaderCreativeTabsFabric extends LoaderCreativeTabs {
-    private static final ResourceKey<CreativeModeTab> MAIN = createKey("main");
+import java.util.List;
 
+public class LoaderCreativeTabsFabric extends LoaderCreativeTabs {
     @Override
     public void init() {
-        CreativeModeTab mainTab = FabricItemGroup.builder()
-                .icon(() -> new ItemStack(ModItems.BALLOT))
-                .title(MAIN_TAB)
-                .build();
+        List<CreativeTabMeta> creativeTabMetaList = getCreativeTabMetaList();
 
-        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, MAIN, mainTab);
+        for (CreativeTabMeta meta : creativeTabMetaList) {
+            ResourceKey<CreativeModeTab> key = createKey(meta.getName());
 
-        ItemGroupEvents.modifyEntriesEvent(MAIN).register(entries -> {
-            for (ResourceKey<Item> itemKey : BuiltInRegistries.ITEM.registryKeySet()) {
-                Item item = BuiltInRegistries.ITEM.get(itemKey);
-                if (itemKey.location().getNamespace().equals(TheLordsLands.MOD_ID)) {
+            CreativeModeTab mainTab = FabricItemGroup.builder()
+                    .icon(() -> new ItemStack(meta.getIcon()))
+                    .title(meta.getDisplayName())
+                    .build();
+
+            Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, key, mainTab);
+
+            ItemGroupEvents.modifyEntriesEvent(key).register(entries -> {
+                CreativeTabMeta.Output output = new CreativeTabMeta.Output();
+                meta.getTabItemsGenerator().accept(output);
+
+                for (Item item : output.getItems()) {
                     entries.accept(item);
                 }
-            }
-        });
+            });
+        }
     }
 }
