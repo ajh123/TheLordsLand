@@ -9,7 +9,7 @@ version = "${version}"
 displayName = "The Lords Land"
 authors = "samuelh2005"
 description = '''
-A government mod with voting, land control, and econonmy control
+A government mod with voting, land control, and economy control
 '''
 #logoFile = ""
 
