@@ -16,5 +16,6 @@ public class ModRegistries {
         BLOCKS.register();
         ModItems.init();
         ITEMS.register();
+        ModPackets.init();
     }
 }

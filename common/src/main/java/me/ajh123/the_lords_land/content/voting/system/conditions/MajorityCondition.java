@@ -1,6 +1,6 @@
-package me.ajh123.the_lords_land.content.voting.conditions;
+package me.ajh123.the_lords_land.content.voting.system.conditions;
 
-import me.ajh123.the_lords_land.content.voting.VotingCondition;
+import me.ajh123.the_lords_land.content.voting.system.VotingCondition;
 
 // A concrete implementation of VotingCondition for a simple majority requirement.
 // For example, for a 2/3 majority, majorityFraction would be 2.0 / 3.

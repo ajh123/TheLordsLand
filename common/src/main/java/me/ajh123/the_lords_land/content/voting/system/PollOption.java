@@ -1,4 +1,7 @@
-package me.ajh123.the_lords_land.content.voting;
+package me.ajh123.the_lords_land.content.voting.system;
+
+import me.ajh123.the_lords_land.content.network.ByteBufConvertable;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,8 +11,8 @@ import java.util.List;
  * Represents a poll option that contains a description, a list of actions to execute,
  * and a vote count.
  */
-public class PollOption {
-    private final String description;
+public class PollOption implements ByteBufConvertable {
+    private String description;
     private final List<VoteResult> results;
     private int votes;
 
@@ -54,5 +57,15 @@ public class PollOption {
                 "description='" + description + '\'' +
                 ", votes=" + votes +
                 '}';
+    }
+
+    @Override
+    public void decode(FriendlyByteBuf buf) {
+        this.description = buf.readUtf();
+    }
+
+    @Override
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeUtf(this.description);
     }
 }

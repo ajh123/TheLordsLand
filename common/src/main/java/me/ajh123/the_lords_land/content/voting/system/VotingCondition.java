@@ -1,4 +1,4 @@
-package me.ajh123.the_lords_land.content.voting;
+package me.ajh123.the_lords_land.content.voting.system;
 
 public interface VotingCondition {
     /**

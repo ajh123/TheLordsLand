@@ -1,4 +1,7 @@
-package me.ajh123.the_lords_land.content.voting;
+package me.ajh123.the_lords_land.content.voting.system;
+
+import me.ajh123.the_lords_land.content.network.ByteBufConvertable;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +10,8 @@ import java.util.Optional;
 /**
  * Represents a generic poll containing a question and a list of poll options.
  */
-public class Poll {
-    private final String question;
+public class Poll implements ByteBufConvertable {
+    private String question;
     private final List<PollOption> options = new ArrayList<>();
     private final VotingCondition votingCondition;
     private boolean isClosed = false;
@@ -91,5 +94,25 @@ public class Poll {
      */
     public List<PollOption> getOptions() {
         return List.copyOf(options);
+    }
+
+    @Override
+    public void decode(FriendlyByteBuf buf) {
+        this.question = buf.readUtf();
+        int size = buf.readInt();
+        for (int i = 0; i < size; i++) {
+            PollOption option = new PollOption("", new ArrayList<>());
+            option.decode(buf);
+            options.add(option);
+        }
+    }
+
+    @Override
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeUtf(question);
+        buf.writeInt(options.size());
+        for (PollOption option : options) {
+            option.encode(buf);
+        }
     }
 }
