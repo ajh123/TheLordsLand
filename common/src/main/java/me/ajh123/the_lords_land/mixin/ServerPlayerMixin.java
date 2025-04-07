@@ -12,6 +12,8 @@ import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+import java.util.UUID;
+
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player implements PlayerMixinWrapper {
     public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
@@ -22,5 +24,11 @@ public abstract class ServerPlayerMixin extends Player implements PlayerMixinWra
     @Override
     public void the_lords_land$openVoteScreen(VoteScreenData data) {
         NetworkManager.sendToPlayer(((ServerPlayer)(Object)this), new OpenVoteS2CPayload(data));
+    }
+
+    @Unique
+    @Override
+    public UUID the_lords_land$getPlayerId() {
+        return this.getUUID();
     }
 }

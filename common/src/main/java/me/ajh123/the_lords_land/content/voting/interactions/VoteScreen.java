@@ -1,7 +1,9 @@
 package me.ajh123.the_lords_land.content.voting.interactions;
 
 import me.ajh123.the_lords_land.TheLordsLands;
+import me.ajh123.the_lords_land.api.IPlayer;
 import me.ajh123.the_lords_land.api.voting.IPollOption;
+import me.ajh123.the_lords_land.content.contract.ContractWidget;
 import me.ajh123.the_lords_land.content.network.CastVoteC2SPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -10,12 +12,8 @@ import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
-
-import java.util.List;
 
 import dev.architectury.networking.NetworkManager;
 
@@ -23,6 +21,7 @@ public class VoteScreen extends Screen {
     private final VoteScreenData data;
     private IPollOption selectedOption = null;
     private Button castVoteButton;
+    private ContractWidget contractWidget;
 
     private int bookOffset;
 
@@ -37,12 +36,15 @@ public class VoteScreen extends Screen {
     public void init() {
         bookOffset = (this.width - 192) / 2;
 
+        this.contractWidget = new ContractWidget(bookOffset, 2, 192, 192, null);
+
         // Create buttons for each poll option on the left
         for (int opt = 0; opt < this.data.poll().getOptions().size(); opt++) {
             int option = opt;
             Button buttonWidget = PlainTextButton.builder(Component.literal(this.data.poll().getOptions().get(option).getTitle()), (btn) -> {
                 this.selectedOption = this.data.poll().getOptions().get(option);
                 this.castVoteButton.active = true;
+                this.contractWidget.setContract(this.selectedOption.getContract(IPlayer.getPlayer(Minecraft.getInstance().player)));
             }).bounds(20, 60 + (opt * 30), 120, 20).build();
             this.addRenderableWidget(buttonWidget);
         }
@@ -60,24 +62,14 @@ public class VoteScreen extends Screen {
             Minecraft.getInstance().setScreen(null);
         }).bounds(this.width / 2 - 100, 196, 200, 20).build();
         this.castVoteButton.active = false; // Initially disabled
+
         this.addRenderableWidget(this.castVoteButton);
+        this.addRenderableWidget(this.contractWidget);
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
         super.render(guiGraphics, mouseX, mouseY, delta);
-
-        if (this.selectedOption != null) {
-            // Render the selected option title at the top middle
-            String title = "--" + this.selectedOption.getTitle() + "--";
-            int m = this.font.width(title);
-            guiGraphics.drawCenteredString(this.font, title, (bookOffset + m), 18, 0xFFFFFF);
-            // Render the selected option's description aligned middle
-            List<FormattedCharSequence> lines = this.font.split(FormattedText.of(this.selectedOption.getDescription()), 114);
-            for (int i = 0; i < lines.size(); i++) {
-                guiGraphics.drawString(this.font, lines.get(i), bookOffset + 36, 32 + (i * this.font.lineHeight), 0, false);
-            }
-        }
     }
 
     @Override

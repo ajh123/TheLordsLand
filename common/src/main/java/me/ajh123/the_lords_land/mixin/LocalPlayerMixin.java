@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
+import java.util.UUID;
+
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends AbstractClientPlayer implements PlayerMixinWrapper {
     @Shadow
@@ -27,5 +29,11 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements P
     @Override
     public void the_lords_land$openVoteScreen(VoteScreenData data) {
         minecraft.setScreen(new VoteScreen(data));
+    }
+
+    @Unique
+    @Override
+    public UUID the_lords_land$getPlayerId() {
+        return this.getUUID();
     }
 }
