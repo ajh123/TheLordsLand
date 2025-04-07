@@ -1,14 +1,21 @@
 package me.ajh123.the_lords_land.fabric;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import dev.architectury.networking.NetworkManager;
 import me.ajh123.the_lords_land.TheLordsLands;
 import me.ajh123.the_lords_land.content.network.OpenVoteS2CPayload;
 import me.ajh123.the_lords_land.content.voting.interactions.VoteScreenData;
+import me.ajh123.the_lords_land.content.voting.system.Poll;
+import me.ajh123.the_lords_land.content.voting.system.PollOption;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 
 public final class TheLordsLandsFabric implements ModInitializer {
     @Override
@@ -24,17 +31,50 @@ public final class TheLordsLandsFabric implements ModInitializer {
 
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            dispatcher.register(Commands.literal("vote").executes(context -> {
-                if (context.getSource().isPlayer()) {
-                    ServerPlayer player = context.getSource().getPlayer();
-                    if (player != null) {
-                        NetworkManager.sendToPlayer(player, new OpenVoteS2CPayload(new VoteScreenData(TheLordsLands.getTestPoll())));
-                    }
-                }
-
-
-                return 1;
-            }));
+            dispatcher.register(Commands.literal("vote")
+                .then(Commands.argument("pollTitle", StringArgumentType.string())
+                    .executes(context -> openVoteGUI(context))
+                    .then(Commands.literal("stats")
+                        .executes(context -> viewPollStats(context)))));
         });
+    }
+
+    private int openVoteGUI(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        String pollTitle = StringArgumentType.getString(context, "pollTitle");
+        Poll poll = TheLordsLands.pollManager.getPoll(pollTitle).orElse(null);
+    
+        if (poll == null) {
+            context.getSource().sendFailure(Component.literal("Poll not found: " + pollTitle));
+            return 0;
+        }
+    
+        ServerPlayer player = context.getSource().getPlayerOrException();
+    
+        // Send the OpenVoteS2CPayload packet with the poll's VoteScreenData
+        NetworkManager.sendToPlayer(player, new OpenVoteS2CPayload(new VoteScreenData(poll)));
+    
+        context.getSource().sendSuccess(() -> Component.literal("Vote GUI opened for poll: " + pollTitle), false);
+        return 1;
+    }
+    
+    private int viewPollStats(CommandContext<CommandSourceStack> context) {
+        String pollTitle = StringArgumentType.getString(context, "pollTitle");
+        Poll poll = TheLordsLands.pollManager.getPoll(pollTitle).orElse(null);
+    
+        if (poll == null) {
+            context.getSource().sendFailure(Component.literal("Poll not found: " + pollTitle));
+            return 0;
+        }
+    
+        StringBuilder stats = new StringBuilder("Poll Statistics for: " + pollTitle + "\n");
+        for (PollOption option : poll.getOptions()) {
+            stats.append(option.getTitle())
+                .append(": ")
+                .append(option.getVotes())
+                .append(" votes\n");
+        }
+    
+        context.getSource().sendSuccess(() -> Component.literal(stats.toString()), false);
+        return 1;
     }
 }

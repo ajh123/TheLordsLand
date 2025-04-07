@@ -1,6 +1,7 @@
 package me.ajh123.the_lords_land.content.voting.interactions;
 
 import me.ajh123.the_lords_land.TheLordsLands;
+import me.ajh123.the_lords_land.content.network.CastVoteC2SPayload;
 import me.ajh123.the_lords_land.content.voting.system.PollOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,6 +16,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.List;
+
+import dev.architectury.networking.NetworkManager;
 
 public class VoteScreen extends Screen {
     private final VoteScreenData data;
@@ -46,6 +49,11 @@ public class VoteScreen extends Screen {
 
         // Create the "Cast Vote" button on the bottom middle
         this.castVoteButton = PlainTextButton.builder(Component.literal("Cast Vote"), (btn) -> {
+            NetworkManager.sendToServer(new CastVoteC2SPayload(new CastVoteData(
+                this.data.poll().getTitle(),
+                this.data.poll().getOptions().indexOf(this.selectedOption)
+            )));
+
             MutableComponent component = Component.literal("Voted for!");
             MutableComponent component2 = Component.literal(this.selectedOption.getTitle());
             Minecraft.getInstance().getToasts().addToast(new SystemToast(SystemToast.SystemToastId.WORLD_BACKUP, component, component2));

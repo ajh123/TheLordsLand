@@ -8,16 +8,16 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Represents a generic poll containing a question and a list of poll options.
+ * Represents a generic poll containing a title and a list of poll options.
  */
 public class Poll implements ByteBufConvertable {
-    private String question;
+    private String title;
     private final List<PollOption> options = new ArrayList<>();
     private final VotingCondition votingCondition;
     private boolean isClosed = false;
 
-    public Poll(String question, VotingCondition votingCondition) {
-        this.question = question;
+    public Poll(String title, VotingCondition votingCondition) {
+        this.title = title;
         this.votingCondition = votingCondition;
     }
 
@@ -83,10 +83,10 @@ public class Poll implements ByteBufConvertable {
     }
 
     /**
-     * Returns the question of the poll.
+     * Returns the title of the poll.
      */
-    public String getQuestion() {
-        return question;
+    public String getTitle() {
+        return title;
     }
 
     /**
@@ -98,7 +98,7 @@ public class Poll implements ByteBufConvertable {
 
     @Override
     public void decode(FriendlyByteBuf buf) {
-        this.question = buf.readUtf();
+        this.title = buf.readUtf();
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
             PollOption option = new PollOption("", "", new ArrayList<>());
@@ -109,10 +109,20 @@ public class Poll implements ByteBufConvertable {
 
     @Override
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(question);
+        buf.writeUtf(title);
         buf.writeInt(options.size());
         for (PollOption option : options) {
             option.encode(buf);
         }
+    }
+
+
+    /**
+     * Checks if the poll is closed.
+     *
+     * @return true if the poll is closed, false otherwise
+     */
+    public boolean isClosed() {
+        return isClosed;
     }
 }
