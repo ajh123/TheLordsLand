@@ -6,10 +6,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import dev.architectury.networking.NetworkManager;
 import me.ajh123.the_lords_land.TheLordsLands;
+import me.ajh123.the_lords_land.api.voting.IPoll;
+import me.ajh123.the_lords_land.api.voting.IPollOption;
 import me.ajh123.the_lords_land.content.network.OpenVoteS2CPayload;
 import me.ajh123.the_lords_land.content.voting.interactions.VoteScreenData;
-import me.ajh123.the_lords_land.content.voting.system.Poll;
-import me.ajh123.the_lords_land.content.voting.system.PollOption;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.CommandSourceStack;
@@ -33,15 +33,15 @@ public final class TheLordsLandsFabric implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(Commands.literal("vote")
                 .then(Commands.argument("pollTitle", StringArgumentType.string())
-                    .executes(context -> openVoteGUI(context))
+                    .executes(this::openVoteGUI)
                     .then(Commands.literal("stats")
-                        .executes(context -> viewPollStats(context)))));
+                        .executes(this::viewPollStats))));
         });
     }
 
     private int openVoteGUI(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         String pollTitle = StringArgumentType.getString(context, "pollTitle");
-        Poll poll = TheLordsLands.pollManager.getPoll(pollTitle).orElse(null);
+        IPoll poll = TheLordsLands.pollManager.getPoll(pollTitle).orElse(null);
     
         if (poll == null) {
             context.getSource().sendFailure(Component.literal("Poll not found: " + pollTitle));
@@ -59,7 +59,7 @@ public final class TheLordsLandsFabric implements ModInitializer {
     
     private int viewPollStats(CommandContext<CommandSourceStack> context) {
         String pollTitle = StringArgumentType.getString(context, "pollTitle");
-        Poll poll = TheLordsLands.pollManager.getPoll(pollTitle).orElse(null);
+        IPoll poll = TheLordsLands.pollManager.getPoll(pollTitle).orElse(null);
     
         if (poll == null) {
             context.getSource().sendFailure(Component.literal("Poll not found: " + pollTitle));
@@ -67,7 +67,7 @@ public final class TheLordsLandsFabric implements ModInitializer {
         }
     
         StringBuilder stats = new StringBuilder("Poll Statistics for: " + pollTitle + "\n");
-        for (PollOption option : poll.getOptions()) {
+        for (IPollOption option : poll.getOptions()) {
             stats.append(option.getTitle())
                 .append(": ")
                 .append(option.getVotes())

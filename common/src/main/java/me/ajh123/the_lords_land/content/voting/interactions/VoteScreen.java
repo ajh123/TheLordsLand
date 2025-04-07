@@ -1,8 +1,8 @@
 package me.ajh123.the_lords_land.content.voting.interactions;
 
 import me.ajh123.the_lords_land.TheLordsLands;
+import me.ajh123.the_lords_land.api.voting.IPollOption;
 import me.ajh123.the_lords_land.content.network.CastVoteC2SPayload;
-import me.ajh123.the_lords_land.content.voting.system.PollOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -21,7 +21,7 @@ import dev.architectury.networking.NetworkManager;
 
 public class VoteScreen extends Screen {
     private final VoteScreenData data;
-    private PollOption selectedOption = null;
+    private IPollOption selectedOption = null;
     private Button castVoteButton;
 
     private int bookOffset;

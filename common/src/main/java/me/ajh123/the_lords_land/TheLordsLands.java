@@ -1,5 +1,6 @@
 package me.ajh123.the_lords_land;
 
+import me.ajh123.the_lords_land.api.voting.IPollManager;
 import me.ajh123.the_lords_land.compat.loader.LoaderCreativeTabs;
 import me.ajh123.the_lords_land.content.voting.system.Poll;
 import me.ajh123.the_lords_land.content.voting.system.PollManager;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 public final class TheLordsLands {
     public static final String MOD_ID = "the_lords_land";
     public static LoaderCreativeTabs loaderCreativeTabs;
-    public static final PollManager pollManager = new PollManager();
+    public static final IPollManager pollManager = new PollManager();
 
     public static void init() {
         ModRegistries.init();
@@ -30,10 +31,5 @@ public final class TheLordsLands {
         poll.addOption(option1);
         poll.addOption(option2);
         pollManager.addPoll(poll);
-    }
-
-
-    public static Poll getTestPoll() {
-        return pollManager.getPoll("test vote").orElse(null);
     }
 }

@@ -1,5 +1,7 @@
 package me.ajh123.the_lords_land.content.voting.system;
 
+import me.ajh123.the_lords_land.api.voting.IPollOption;
+import me.ajh123.the_lords_land.api.voting.IVoteResult;
 import me.ajh123.the_lords_land.content.network.ByteBufConvertable;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -7,17 +9,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Represents a poll option that contains a description, a list of actions to execute,
- * and a vote count.
- */
-public class PollOption implements ByteBufConvertable {
+public class PollOption implements ByteBufConvertable, IPollOption {
     private String description;
     private String title;
-    private final List<VoteResult> results;
+    private final List<IVoteResult> results;
     private int votes;
 
-    public PollOption(String description, String title, List<VoteResult> results) {
+    public PollOption(String description, String title, List<IVoteResult> results) {
         this.description = description;
         this.title = title;
         // Create a defensive copy of the actions list.
@@ -25,37 +23,27 @@ public class PollOption implements ByteBufConvertable {
         this.votes = 0;
     }
 
-    /**
-     * Increments the vote count for this option.
-     */
+    @Override
     public void addVote() {
         votes++;
     }
 
-    /**
-     * Returns the title of this option.
-     */
+    @Override
     public String getTitle() {
         return title;
     }
 
-    /**
-     * Returns the description of this option.
-     */
+    @Override
     public String getDescription() {
         return description;
     }
 
-    /**
-     * Returns an unmodifiable view of the results.
-     */
-    public List<VoteResult> getResults() {
+    @Override
+    public List<IVoteResult> getResults() {
         return Collections.unmodifiableList(results);
     }
 
-    /**
-     * Returns the current vote count for this option.
-     */
+    @Override
     public int getVotes() {
         return votes;
     }

@@ -1,5 +1,9 @@
 package me.ajh123.the_lords_land.content.voting.system;
 
+import me.ajh123.the_lords_land.api.voting.IPoll;
+import me.ajh123.the_lords_land.api.voting.IPollOption;
+import me.ajh123.the_lords_land.api.voting.IVoteResult;
+import me.ajh123.the_lords_land.api.voting.IVotingCondition;
 import me.ajh123.the_lords_land.content.network.ByteBufConvertable;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -7,39 +11,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Represents a generic poll containing a title and a list of poll options.
- */
-public class Poll implements ByteBufConvertable {
+public class Poll implements ByteBufConvertable, IPoll {
     private String title;
-    private final List<PollOption> options = new ArrayList<>();
-    private final VotingCondition votingCondition;
+    private final List<IPollOption> options = new ArrayList<>();
+    private final IVotingCondition votingCondition;
     private boolean isClosed = false;
 
-    public Poll(String title, VotingCondition votingCondition) {
+    public Poll(String title, IVotingCondition votingCondition) {
         this.title = title;
         this.votingCondition = votingCondition;
     }
 
-    /**
-     * Adds a poll option.
-     *
-     * @param option the poll option to add
-     */
-    public void addOption(PollOption option) {
+    @Override
+    public void addOption(IPollOption option) {
         if (isClosed) {
             throw new IllegalStateException("Poll is closed. Cannot add an option.");
         }
         options.add(option);
     }
 
-    /**
-     * Records a vote for the specified poll option instance.
-     *
-     * @param option the poll option instance for which to cast the vote.
-     * @throws IllegalArgumentException if the option is not part of this poll.
-     */
-    public void vote(PollOption option) {
+    @Override
+    public void vote(IPollOption option) {
         if (isClosed) {
             throw new IllegalStateException("Poll is closed. Cannot vote.");
         }
@@ -49,18 +41,14 @@ public class Poll implements ByteBufConvertable {
         option.addVote();
     }
 
-    /**
-     * Determines the winning poll option based on the voting condition.
-     *
-     * @return an Optional containing the winning poll option, or empty if none qualifies.
-     */
-    public Optional<PollOption> determineWinner() {
+    @Override
+    public Optional<IPollOption> determineWinner() {
         if (isClosed) {
             throw new IllegalStateException("Poll is already closed.");
         }
         isClosed = true;
-        int totalVotes = options.stream().mapToInt(PollOption::getVotes).sum();
-        for (PollOption option : options) {
+        int totalVotes = options.stream().mapToInt(IPollOption::getVotes).sum();
+        for (IPollOption option : options) {
             if (votingCondition.isWinner(option.getVotes(), totalVotes)) {
                 return Optional.of(option);
             }
@@ -68,31 +56,25 @@ public class Poll implements ByteBufConvertable {
         return Optional.empty();
     }
 
-    /**
-     * Executes the results associated with the winning poll option.
-     */
+    @Override
     public void executeWinningResults() {
-        Optional<PollOption> winningOption = determineWinner();
+        Optional<IPollOption> winningOption = determineWinner();
         if (winningOption.isPresent()) {
-            PollOption option = winningOption.get();
+            IPollOption option = winningOption.get();
             System.out.println("Winning option: " + option.getDescription());
-            option.getResults().forEach(VoteResult::execute);
+            option.getResults().forEach(IVoteResult::execute);
         } else {
             System.out.println("No option met the winning criteria.");
         }
     }
 
-    /**
-     * Returns the title of the poll.
-     */
+    @Override
     public String getTitle() {
         return title;
     }
 
-    /**
-     * Returns an unmodifiable list of poll options.
-     */
-    public List<PollOption> getOptions() {
+    @Override
+    public List<IPollOption> getOptions() {
         return List.copyOf(options);
     }
 
@@ -111,17 +93,14 @@ public class Poll implements ByteBufConvertable {
     public void encode(FriendlyByteBuf buf) {
         buf.writeUtf(title);
         buf.writeInt(options.size());
-        for (PollOption option : options) {
-            option.encode(buf);
+        for (IPollOption option : options) {
+            if (option instanceof ByteBufConvertable byteBufConvertable)
+                byteBufConvertable.encode(buf);
         }
     }
 
 
-    /**
-     * Checks if the poll is closed.
-     *
-     * @return true if the poll is closed, false otherwise
-     */
+    @Override
     public boolean isClosed() {
         return isClosed;
     }

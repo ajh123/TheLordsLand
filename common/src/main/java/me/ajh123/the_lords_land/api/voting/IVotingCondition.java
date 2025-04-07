@@ -1,6 +1,6 @@
-package me.ajh123.the_lords_land.content.voting.system;
+package me.ajh123.the_lords_land.api.voting;
 
-public interface VotingCondition {
+public interface IVotingCondition {
     /**
      * Determines whether an option wins based on its vote count and the total votes.
      *
