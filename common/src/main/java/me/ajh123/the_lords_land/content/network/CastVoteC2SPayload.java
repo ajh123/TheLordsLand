@@ -2,6 +2,7 @@ package me.ajh123.the_lords_land.content.network;
 
 import dev.architectury.networking.NetworkManager;
 import me.ajh123.the_lords_land.TheLordsLands;
+import me.ajh123.the_lords_land.api.IPlayer;
 import me.ajh123.the_lords_land.content.voting.interactions.CastVoteData;
 import net.fabricmc.api.EnvType;
 import net.minecraft.network.FriendlyByteBuf;
@@ -41,7 +42,8 @@ public record CastVoteC2SPayload(CastVoteData data) implements CustomPacketPaylo
                     System.out.println("Invalid option index.");
                     return;
                 }
-                poll.vote(poll.getOptions().get(data.getVoteOption()));
+                IPlayer player = IPlayer.getPlayer(context.getPlayer());
+                poll.vote(player, poll.getOptions().get(data.getVoteOption()));
             });
         }
     }

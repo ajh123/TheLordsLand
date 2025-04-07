@@ -4,11 +4,11 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import dev.architectury.networking.NetworkManager;
 import me.ajh123.the_lords_land.TheLordsLands;
+import me.ajh123.the_lords_land.api.IPlayer;
+import me.ajh123.the_lords_land.api.internal.PlayerMixinWrapper;
 import me.ajh123.the_lords_land.api.voting.IPoll;
 import me.ajh123.the_lords_land.api.voting.IPollOption;
-import me.ajh123.the_lords_land.content.network.OpenVoteS2CPayload;
 import me.ajh123.the_lords_land.content.voting.interactions.VoteScreenData;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -48,10 +48,21 @@ public final class TheLordsLandsFabric implements ModInitializer {
             return 0;
         }
     
-        ServerPlayer player = context.getSource().getPlayerOrException();
-    
-        // Send the OpenVoteS2CPayload packet with the poll's VoteScreenData
-        NetworkManager.sendToPlayer(player, new OpenVoteS2CPayload(new VoteScreenData(poll)));
+        IPlayer player = IPlayer.getPlayer(context.getSource().getPlayerOrException());
+
+        boolean hasVoted = false;
+        for (IPollOption option : poll.getOptions()) {
+            if (option.getSignatures().containsKey(player)) {
+                hasVoted = true;
+                break;
+            }
+        }
+        if (hasVoted) {
+            context.getSource().sendFailure(Component.literal("You have already voted in this poll."));
+            return 0;
+        }
+
+        player.openVoteScreen(new VoteScreenData(poll));
     
         context.getSource().sendSuccess(() -> Component.literal("Vote GUI opened for poll: " + pollTitle), false);
         return 1;

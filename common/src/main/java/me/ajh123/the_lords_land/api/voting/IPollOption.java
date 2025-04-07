@@ -1,17 +1,14 @@
 package me.ajh123.the_lords_land.api.voting;
 
+import me.ajh123.the_lords_land.api.contracts.IContract;
+
 import java.util.List;
 
 /**
  * Represents a poll option that contains a description, a list of actions to execute,
  * and a vote count.
  */
-public interface IPollOption {
-    /**
-     * Increments the vote count for this option.
-     */
-    void addVote();
-
+public interface IPollOption extends IContract {
     /**
      * Returns the title of this option.
      */

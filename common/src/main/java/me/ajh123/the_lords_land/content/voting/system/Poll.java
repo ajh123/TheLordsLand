@@ -1,5 +1,7 @@
 package me.ajh123.the_lords_land.content.voting.system;
 
+import me.ajh123.the_lords_land.api.IPlayer;
+import me.ajh123.the_lords_land.api.internal.PlayerMixinWrapper;
 import me.ajh123.the_lords_land.api.voting.IPoll;
 import me.ajh123.the_lords_land.api.voting.IPollOption;
 import me.ajh123.the_lords_land.api.voting.IVoteResult;
@@ -31,14 +33,14 @@ public class Poll implements ByteBufConvertable, IPoll {
     }
 
     @Override
-    public void vote(IPollOption option) {
+    public void vote(IPlayer player, IPollOption option) {
         if (isClosed) {
             throw new IllegalStateException("Poll is closed. Cannot vote.");
         }
         if (!options.contains(option)) {
             throw new IllegalArgumentException("The provided option is not part of this poll.");
         }
-        option.addVote();
+        option.sign(player);
     }
 
     @Override

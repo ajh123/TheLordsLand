@@ -1,5 +1,7 @@
 package me.ajh123.the_lords_land.api.voting;
 
+import me.ajh123.the_lords_land.api.IPlayer;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -17,10 +19,11 @@ public interface IPoll {
     /**
      * Records a vote for the specified poll option instance.
      *
+     * @param player the player casting the vote
      * @param option the poll option instance for which to cast the vote.
      * @throws IllegalArgumentException if the option is not part of this poll.
      */
-    void vote(IPollOption option);
+    void vote(IPlayer player, IPollOption option);
 
     /**
      * Determines the winning poll option based on the voting condition.

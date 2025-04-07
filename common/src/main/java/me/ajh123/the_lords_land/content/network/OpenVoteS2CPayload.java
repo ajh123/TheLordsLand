@@ -2,7 +2,7 @@ package me.ajh123.the_lords_land.content.network;
 
 import dev.architectury.networking.NetworkManager;
 import me.ajh123.the_lords_land.TheLordsLands;
-import me.ajh123.the_lords_land.api.LordsLandPlayer;
+import me.ajh123.the_lords_land.api.internal.PlayerMixinWrapper;
 import me.ajh123.the_lords_land.content.voting.interactions.VoteScreenData;
 import me.ajh123.the_lords_land.content.voting.system.Poll;
 import net.fabricmc.api.EnvType;
@@ -33,7 +33,7 @@ public record OpenVoteS2CPayload(VoteScreenData data) implements CustomPacketPay
     public static void receive(OpenVoteS2CPayload value, NetworkManager.PacketContext context) {
         if (context.getEnv() == EnvType.CLIENT) {
             VoteScreenData data = value.data;
-            if (context.getPlayer() instanceof LordsLandPlayer player) {
+            if (context.getPlayer() instanceof PlayerMixinWrapper player) {
                 player.the_lords_land$openVoteScreen(data);
             }
         }
